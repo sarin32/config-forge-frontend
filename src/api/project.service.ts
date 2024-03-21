@@ -21,6 +21,13 @@ class ProjectService {
     return await request;
   }
 
+  async editProject(body: {projectId: string; name: string}) {
+    const {request} = this.httpService.post('/project/edit', body, {
+      ...getAuthHeaders(),
+    });
+    return await request;
+  }
+
   async getProjetList() {
     const {request} = this.httpService.post<GetProjectListResult>(
       '/project/getList',

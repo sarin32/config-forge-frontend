@@ -1,4 +1,4 @@
-import {projectService} from '@/api/project.service';
+import {ProjectInfo, projectService} from '@/api/project.service';
 import {Button} from '@/components/ui/button';
 import {
   Form,
@@ -19,6 +19,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import {Pencil} from 'lucide-react';
 
 const formSchema = z.object({
   name: z
@@ -27,26 +28,31 @@ const formSchema = z.object({
     .max(16, {message: 'Project Name can not be more than 16 characters.'}),
 });
 
-export function CreateProject({projectCreated}:{projectCreated: Function}) {
+export function EditProject({project, projectEdited}: {project: ProjectInfo, projectEdited:Function}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: project.name,
+    },
+  });
 
   const openModal = () => {
     setIsModalOpen(true);
   };
   const closeModal = () => {
     setIsModalOpen(false);
+    form.reset({name: project.name});
   };
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-    },
-  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    const response = await projectService.createProject({name: values.name});
+    const response = await projectService.editProject({
+      projectId: project.projectId,
+      name: values.name,
+    });
     setIsLoading(false);
 
     if (!response.ok) {
@@ -55,16 +61,17 @@ export function CreateProject({projectCreated}:{projectCreated: Function}) {
       });
       return;
     }
-    form.reset()
-    projectCreated()
+    projectEdited()
     closeModal();
   }
 
   return (
     <AlertDialog open={isModalOpen}>
-      <Button onClick={openModal}> Create New Project </Button>
+      <button onClick={openModal}>
+        <Pencil size={16} />
+      </button>
       <AlertDialogContent>
-        <AlertDialogTitle>Create New Project</AlertDialogTitle>
+        <AlertDialogTitle>Edit Project</AlertDialogTitle>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -95,7 +102,7 @@ export function CreateProject({projectCreated}:{projectCreated: Function}) {
               type="submit"
               loading={isLoading}
             >
-              Create Project
+              Update
             </Button>
           </form>
         </Form>

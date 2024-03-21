@@ -9,10 +9,10 @@ import {
 } from '@/components/ui/card';
 import {GetProjectListResult, projectService} from '@/api/project.service';
 import {formatDateToIST} from '@/lib/utils';
+import {EditProject} from './edit-project';
 
 export function Projects() {
   const [projectList, setProjectList] = useState([] as GetProjectListResult);
-
   const fetchProjects = async () => {
     const response = await projectService.getProjetList();
     if (!response.ok) {
@@ -27,22 +27,29 @@ export function Projects() {
 
   return (
     <>
-      <CreateProject />
+      <div className="flex justify-end  m-7">
+        <CreateProject projectCreated={fetchProjects} />
+      </div>
+      <div className="grid flex-wrap justify-around gap-5 m-5 lg:grid-cols-3 md:grid-cols-2">
+        {/* Map through the projectList array and render project cards */}
+        {projectList.map(project => (
+          <Card key={project.projectId} className='flex-auto'>
+            <CardHeader>
+              <CardTitle className="flex justify-between">
+                {project.name}
+                <EditProject project={project} projectEdited={fetchProjects} />
+              </CardTitle>
 
-      {/* Map through the projectList array and render project cards */}
-      {projectList.map(project => (
-        <Card key={project.projectId}>
-          <CardHeader>
-            <CardTitle>{project.name}</CardTitle>
-            <CardDescription>
-              {project.environmentCount} Environments
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            {formatDateToIST(new Date(project.createdAt))}
-          </CardFooter>
-        </Card>
-      ))}
+              <CardDescription>
+                {project.environmentCount} Environments
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
+              {formatDateToIST(new Date(project.createdAt))}
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </>
   );
 }
