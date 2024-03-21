@@ -1,10 +1,11 @@
 import {Projects} from '@/pages/projects';
-import {Route, Routes} from 'react-router-dom';
+import {Navigate, Route, Routes} from 'react-router-dom';
 
 export function DashboardRoute() {
   return (
     <Routes>
-      <Route path="/" element={<Projects />}></Route>
+      <Route path="/" element={<Navigate to="project" replace />} />
+      <Route path="/project" element={<Projects />}></Route>
     </Routes>
   );
 }
