@@ -36,7 +36,7 @@ const formSchema = z.object({
 export function Register({
   registrationSuccess,
 }: {
-  registrationSuccess: Function;
+  registrationSuccess: () => void;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,7 +84,7 @@ export function Register({
     }
     setSessionToken(response.data.token);
 
-    registrationService.sendVerificationEmail({});
+    registrationService.sendVerificationEmail();
 
     registrationSuccess();
   }

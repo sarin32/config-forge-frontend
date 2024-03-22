@@ -25,7 +25,7 @@ const formSchema = z.object({
 export function OtpVerification({
   otpVerificationSuccess,
 }: {
-  otpVerificationSuccess: Function;
+  otpVerificationSuccess: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showResendButton, setShowResendButton] = useState(false);
@@ -57,7 +57,7 @@ export function OtpVerification({
   }, [lastResendTime]); // Run this effect whenever lastResendTime changes
 
   const handleResendClick = () => {
-    registrationService.sendVerificationEmail({});
+    registrationService.sendVerificationEmail();
     setAvailableTries(availableTries - 1);
     // Update the lastResendTime to the current time
     setLastResendTime(Date.now());

@@ -28,7 +28,13 @@ const formSchema = z.object({
     .max(16, {message: 'Project Name can not be more than 16 characters.'}),
 });
 
-export function EditProject({project, projectEdited}: {project: ProjectInfo, projectEdited:Function}) {
+export function EditProject({
+  project,
+  projectEdited,
+}: {
+  project: ProjectInfo;
+  projectEdited: () => void;
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -61,7 +67,7 @@ export function EditProject({project, projectEdited}: {project: ProjectInfo, pro
       });
       return;
     }
-    projectEdited()
+    projectEdited();
     closeModal();
   }
 

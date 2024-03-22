@@ -36,6 +36,13 @@ class ProjectService {
     );
     return await request;
   }
+
+  async getProjectDataInDetail(body: {projectId: string}) {
+    const {request} = this.httpService.post('/project/getDataInDetail', body, {
+      ...getAuthHeaders(),
+    });
+    return await request;
+  }
 }
 
 export const projectService = new ProjectService();

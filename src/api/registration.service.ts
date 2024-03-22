@@ -22,10 +22,10 @@ class RegistrationService {
     return await request;
   }
 
-  async sendVerificationEmail(body: {}) {
+  async sendVerificationEmail() {
     const {request} = this.httpService.post(
       '/user/sendEmailForVerification',
-      body,
+      {},
       {...getAuthHeaders()}
     );
     return await request;
