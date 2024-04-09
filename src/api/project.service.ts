@@ -11,6 +11,22 @@ export interface ProjectInfo {
 
 export type GetProjectListResult = ProjectInfo[];
 
+export interface GetProjectDataInDetailResult {
+  id: string;
+  name: string;
+  createdAt: string;
+  environments: {
+    id: string;
+    environmentName: string;
+    variables: {
+      id: string;
+      key: string;
+      value: string;
+      isOverride: boolean;
+    }[];
+  }[];
+}
+
 class ProjectService {
   httpService = new HttpService(API_BASE_URL);
 
@@ -38,9 +54,13 @@ class ProjectService {
   }
 
   async getProjectDataInDetail(body: {projectId: string}) {
-    const {request} = this.httpService.post('/project/getDataInDetail', body, {
-      ...getAuthHeaders(),
-    });
+    const {request} = this.httpService.post<GetProjectDataInDetailResult>(
+      '/project/getDataInDetail',
+      body,
+      {
+        ...getAuthHeaders(),
+      }
+    );
     return await request;
   }
 }
