@@ -5,11 +5,14 @@ import {useEffect, useState} from 'react';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {AddVariable} from './add-variable';
+import {EditVariables} from './edit-variables';
 
 export function ProjectDetailView() {
   const {projectId} = useParams();
@@ -70,52 +73,100 @@ export function ProjectDetailView() {
     fetchProjectDataInDetail();
   }, []);
 
-  return (
-    <>
+  const handleEnvironmentCreated = () => {
+    fetchProjectDataInDetail();
+  };
+
+  const CreateEnvironmentObject = () => {
+    return (
       <CreateEnvironment
         projectId={projectId}
-        environmentCreated={() => {}}
+        environmentCreated={handleEnvironmentCreated}
       ></CreateEnvironment>
+    );
+  };
 
-      <h2>{projectData.name}</h2>
+  const getVariable = (envId: string, variableKey: string) => {
+    return variableData[variableKey].find(
+      variable => variable.environmentId == envId
+    );
+  };
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Key</TableHead>
+  return (
+    <div className="m-5">
+      <div className="flex justify-between">
+        <h2>{projectData.name}</h2>
 
-            {environmentData.map(env => {
+        <CreateEnvironmentObject />
+      </div>
+
+      {environmentData.length ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Key</TableHead>
+
+              {environmentData.map(env => {
+                return (
+                  <TableHead key={env.id} className="">
+                    <div className="flex items-center">{env.name}</div>
+                  </TableHead>
+                );
+              })}
+              <TableHead className="w-[100px]">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {Object.keys(variableData).map(variableKey => {
               return (
-                <TableHead key={env.id} className="">
-                  {env.name}
-                </TableHead>
+                <TableRow key={variableKey}>
+                  <TableCell className="font-medium">{variableKey}</TableCell>
+
+                  {environmentData.map(env => {
+                    return (
+                      <TableCell key={env.id} className="font-medium">
+                        {getVariable(env.id, variableKey)?.value}
+                      </TableCell>
+                    );
+                  })}
+                  <TableCell>
+                    <EditVariables
+                      keyValue={variableKey}
+                      variableData={environmentData.map(env => {
+                        const variable = getVariable(env.id, variableKey);
+                        return {
+                          environmentId: env.id,
+                          environmentName: env.name,
+                          value: variable?.value || '',
+                          variableId: variable?.id || null,
+                        };
+                      })}
+                    ></EditVariables>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {Object.keys(variableData).map(variableKey => {
-            return (
-              <TableRow key={variableKey}>
-                <TableCell className="font-medium">{variableKey}</TableCell>
-
-                {environmentData.map(env => {
-                  return (
-                    <TableCell key={env.id} className="font-medium">
-                      {
-                        variableData[variableKey].find(
-                          variable => variable.environmentId == env.id
-                        )?.value
-                      }
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </>
+          </TableBody>
+          <TableCaption>
+            <AddVariable
+              environmentData={environmentData.map(env => {
+                return {
+                  id: env.id,
+                  name: env.name,
+                };
+              })}
+            />
+          </TableCaption>
+        </Table>
+      ) : (
+        <div className="flex flex-col justify-center items-center h-screen">
+          Start Creating Environments
+          <div className="m-4">
+            <CreateEnvironmentObject />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
