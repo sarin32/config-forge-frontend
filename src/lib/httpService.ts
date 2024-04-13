@@ -13,7 +13,7 @@ interface FailureResponse {
   httpCode: HttpStatusCode;
 }
 
-type Response<ResponseDataT> = SuccessResponse<ResponseDataT> | FailureResponse;
+export type Response<ResponseDataT> = SuccessResponse<ResponseDataT> | FailureResponse;
 
 export class HttpService {
   baseurl: string;
