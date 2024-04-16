@@ -22,9 +22,9 @@ const addKeyFormSchema = z.object({
 export function AddKeyForm({
   cancel,
   proceed,
-  defaultKey
+  defaultKey,
 }: {
-  defaultKey:string
+  defaultKey: string;
   cancel: () => void;
   proceed: (key: string) => void;
 }) {
@@ -54,7 +54,9 @@ export function AddKeyForm({
           )}
         />
         <div className="flex mt-3 space-x-2 justify-end">
-          <Button onClick={cancel} variant={'outline'}>Cancel</Button>
+          <Button onClick={cancel} variant={'outline'}>
+            Cancel
+          </Button>
           <Button>Proceed</Button>
         </div>
       </form>
