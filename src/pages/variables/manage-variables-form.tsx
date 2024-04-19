@@ -22,6 +22,7 @@ export function ManageVariableForm({
   variableData,
   close,
   back,
+  variableUpdates,
 }: {
   keyValue: string;
   variableData: {
@@ -32,6 +33,11 @@ export function ManageVariableForm({
   }[];
   close: () => void;
   back?: () => void;
+  variableUpdates: (params: {
+    variableId: string;
+    value: string;
+    environmentId: string;
+  }) => void;
 }) {
   console.log(variableData);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -69,8 +75,11 @@ export function ManageVariableForm({
       form.setError(filedName, {message: response.data.message});
       return;
     }
-    variableData[index].variableId = response.data.variableId;
-    variableData[index].value = value;
+    variableUpdates({
+      environmentId,
+      variableId: response.data.variableId,
+      value: value,
+    });
   };
 
   return (

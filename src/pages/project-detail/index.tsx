@@ -1,5 +1,5 @@
 import {useParams} from 'react-router-dom';
-import {CreateEnvironment} from './create-environment';
+import {CreateEnvironment} from '../environments/create-environment';
 import {projectService} from '@/api/project.service';
 import {useEffect, useState} from 'react';
 import {
@@ -11,8 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {AddVariable} from './add-variable';
-import {EditVariables} from './edit-variables';
+import {CreateOrUpdateVariable} from '../variables/create-or-update-variable';
 
 export function ProjectDetailView() {
   const {projectId} = useParams();
@@ -92,6 +91,11 @@ export function ProjectDetailView() {
     );
   };
 
+  const closeFromVariableUpdates = (varUpdatesPresent: boolean): void => {
+    if (!varUpdatesPresent) return;
+    fetchProjectDataInDetail();
+  };
+
   return (
     <div className="m-5">
       <div className="flex justify-between">
@@ -131,7 +135,9 @@ export function ProjectDetailView() {
                     );
                   })}
                   <TableCell>
-                    <EditVariables
+                    <CreateOrUpdateVariable
+                      close={closeFromVariableUpdates}
+                      mode="edit"
                       keyValue={variableKey}
                       variableData={environmentData.map(env => {
                         const variable = getVariable(env.id, variableKey);
@@ -142,18 +148,22 @@ export function ProjectDetailView() {
                           variableId: variable?.id || null,
                         };
                       })}
-                    ></EditVariables>
+                    ></CreateOrUpdateVariable>
                   </TableCell>
                 </TableRow>
               );
             })}
           </TableBody>
           <TableCaption>
-            <AddVariable
-              environmentData={environmentData.map(env => {
+            <CreateOrUpdateVariable
+              close={closeFromVariableUpdates}
+              mode="create"
+              variableData={environmentData.map(env => {
                 return {
-                  id: env.id,
-                  name: env.name,
+                  environmentId: env.id,
+                  environmentName: env.name,
+                  value: '',
+                  variableId: null,
                 };
               })}
             />
