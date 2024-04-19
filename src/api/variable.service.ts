@@ -27,6 +27,17 @@ class VariableService {
     );
     return await request;
   }
+
+  async updateVariable(body: {
+    variableId: string;
+    key?: string;
+    value?: string;
+  }) {
+    const {request} = this.httpService.post<void>('/variable/update', body, {
+      ...getAuthHeaders(),
+    });
+    return await request;
+  }
 }
 
 export const variableService = new VariableService();

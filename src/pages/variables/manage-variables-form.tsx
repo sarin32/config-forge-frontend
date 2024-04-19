@@ -13,6 +13,8 @@ import {useFieldArray, useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {variableService} from '@/api/variable.service';
 
+type formVariableValueName = `values.${number}.value`;
+
 const formSchema = z.object({
   values: z.array(z.object({value: z.string()})),
 });
@@ -39,7 +41,6 @@ export function ManageVariableForm({
     environmentId: string;
   }) => void;
 }) {
-  console.log(variableData);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,17 +55,26 @@ export function ManageVariableForm({
     name: 'values',
   });
 
+  const isValidVariableValue = (
+    variableValue: string,
+    filedName: formVariableValueName
+  ): boolean => {
+    if (!variableValue) {
+      form.setError(filedName, {message: 'Please provide value'});
+      return false;
+    }
+    form.clearErrors(filedName);
+    return true;
+  };
+
   const createVariable = async (
     environmentId: string,
     value: string,
     index: number
   ) => {
-    const filedName: `values.${number}.value` = `values.${index}.value`;
-    if (!value) {
-      form.setError(filedName, {message: 'Please provide value'});
-      return;
-    }
-    form.clearErrors(filedName);
+    const filedName: formVariableValueName = `values.${index}.value`;
+    if (!isValidVariableValue(value, filedName)) return;
+
     const response = await variableService.createVariable({
       environmentId,
       key: keyValue,
@@ -78,6 +88,34 @@ export function ManageVariableForm({
     variableUpdates({
       environmentId,
       variableId: response.data.variableId,
+      value: value,
+    });
+  };
+
+  const updateVariable = async (
+    environmentId: string,
+    value: string,
+    index: number
+  ) => {
+    const filedName: formVariableValueName = `values.${index}.value`;
+    if (!isValidVariableValue(value, filedName)) return;
+
+    const variableId = variableData[index].variableId;
+    if (!variableId) return;
+
+    const response = await variableService.updateVariable({
+      variableId,
+      key: keyValue,
+      value,
+    });
+
+    if (!response.ok) {
+      form.setError(filedName, {message: response.data.message});
+      return;
+    }
+    variableUpdates({
+      environmentId,
+      variableId: variableId,
       value: value,
     });
   };
@@ -105,19 +143,37 @@ export function ManageVariableForm({
                   <FormControl>
                     <div className="flex">
                       <Input {...field} />
-                      <Button
-                        type="button"
-                        className="ml-2"
-                        onClick={() =>
-                          createVariable(
-                            variableData[index].environmentId,
-                            field.value,
-                            index
-                          )
-                        }
-                      >
-                        {variableData[index].variableId ? 'Update' : 'Create'}
-                      </Button>
+
+                      {/* create or update button */}
+                      <div className="ml-2">
+                        {variableData[index].variableId ? (
+                          <Button
+                            type="button"
+                            onClick={() =>
+                              updateVariable(
+                                variableData[index].environmentId,
+                                field.value,
+                                index
+                              )
+                            }
+                          >
+                            Update
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            onClick={() =>
+                              createVariable(
+                                variableData[index].environmentId,
+                                field.value,
+                                index
+                              )
+                            }
+                          >
+                            Create
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </FormControl>
                   <FormMessage />
