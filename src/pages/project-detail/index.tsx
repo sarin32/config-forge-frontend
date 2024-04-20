@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {CreateOrUpdateVariable} from '../variables/create-or-update-variable';
+import {DeleteVariable} from '../variables/delete-variable';
 
 export function ProjectDetailView() {
   const {projectId} = useParams();
@@ -129,8 +130,19 @@ export function ProjectDetailView() {
 
                   {environmentData.map(env => {
                     return (
-                      <TableCell key={env.id} className="font-medium">
-                        {getVariable(env.id, variableKey)?.value}
+                      <TableCell
+                        key={env.id}
+                        className="parent-hover font-medium"
+                      >
+                        <div className="flex justify-between">
+                          {getVariable(env.id, variableKey)?.value}
+                          <DeleteVariable
+                            variableId={
+                              getVariable(env.id, variableKey)?.id || ''
+                            }
+                            deleted={fetchProjectDataInDetail}
+                          ></DeleteVariable>
+                        </div>
                       </TableCell>
                     );
                   })}

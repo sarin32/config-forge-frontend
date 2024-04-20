@@ -38,6 +38,13 @@ class VariableService {
     });
     return await request;
   }
+
+  async deleteVariable(body: {variableId: string}) {
+    const {request} = this.httpService.post<void>('/variable/delete', body, {
+      ...getAuthHeaders(),
+    });
+    return await request;
+  }
 }
 
 export const variableService = new VariableService();

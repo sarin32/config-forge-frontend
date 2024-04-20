@@ -46,7 +46,7 @@ export function CreateOrUpdateVariable({
     setIsKeyCreated(true);
   };
 
-  let backFromManage = () => {
+  const backFromManage = () => {
     setIsKeyCreated(false);
   };
 
