@@ -1,10 +1,9 @@
-
 name: Build and Push Docker Image
 
 on:
   push:
     branches:
-      - main  # Change this to your master branch or the branch you want to trigger the action
+      - main # Change this to your master branch or the branch you want to trigger the action
 
 jobs:
   build-and-push:
@@ -23,3 +22,6 @@ jobs:
 
       - name: Push Docker image to GHCR
         run: docker push ghcr.io/${{ github.repository }}:latest
+
+      - name: Deploy the pushed image
+        run: curl ${{secrets.RENDER_DEPLOYMENT_HOOK}}
